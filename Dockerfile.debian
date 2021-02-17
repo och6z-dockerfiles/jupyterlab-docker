@@ -1,0 +1,44 @@
+ARG IMAGE_VERSION
+
+FROM python:${IMAGE_VERSION}
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends
+
+RUN pip install --upgrade \
+    pip \
+    setuptools \
+    wheel \
+    eggs
+
+RUN pip install --upgrade \
+    jupyterlab \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG GID
+ARG GID_NAME
+ARG UID
+ARG UID_NAME
+
+RUN addgroup --gid ${GID} ${UID_NAME} \
+    && adduser --uid ${UID} \
+    --ingroup ${GID_NAME} \
+    --home /home/${UID_NAME} \
+    --shell /bin/bash \
+    --disabled-password \
+    --gecos "" ${UID_NAME}
+
+RUN mkdir --parents /home/${UID_NAME}/jupyter-lab
+
+WORKDIR /home/${UID_NAME}/jupyter-lab
+
+EXPOSE 8888
+
+ENTRYPOINT ["jupyter-lab"]
+
+CMD ["--allow-root", "--ip=0.0.0.0", "--no-browser"]
+
+#docker builder build --no-cache --build-arg IMAGE_VERSION=slim --build-arg GID=$(id -g) --build-arg GID_NAME=$(id -gn) --build-arg UID=$(id -u) --build-arg UID_NAME=$(id -un) --file Dockerfile.debian --tag image-name:version .
+#docker container run --interactive --tty --publish 8888:8888 --name container-name image-name:version
