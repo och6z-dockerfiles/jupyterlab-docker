@@ -25,10 +25,12 @@ RUN pip install --upgrade --no-cache-dir \
     jupyterlab_code_formatter \
     black \
     isort \
+    && mkdir --parents $HOME/.jupyter/lab/user-settings \
+    && mkdir --parents /home/jupyter-lab \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
-RUN mkdir --parents /home/jupyter-lab
+COPY user-settings /root/.jupyter/lab/user-settings
 
 WORKDIR /home/jupyter-lab
 
