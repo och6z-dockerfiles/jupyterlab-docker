@@ -1,0 +1,42 @@
+ARG IMAGE_VERSION
+
+FROM python:${IMAGE_VERSION}
+
+RUN apk update \
+    && apk upgrade --no-cache \
+    && apk add --no-cache \
+    --virtual .build-deps \
+    build-base \
+    musl-dev \
+    && apk add --no-cache \
+    zeromq-dev \
+    libffi-dev \
+    && rm -rf /var/cache/apk/*
+
+RUN pip install --upgrade --no-cache-dir \
+    pip \
+    setuptools \
+    wheel \
+    eggs \
+    && rm -rf /var/cache/apk/*
+
+RUN pip install --upgrade --no-cache-dir \
+    jupyterlab \
+    jupyterlab_code_formatter \
+    black \
+    isort \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/*
+
+RUN mkdir --parents /home/jupyter-lab
+
+WORKDIR /home/jupyter-lab
+
+EXPOSE 8888
+
+ENTRYPOINT ["jupyter-lab"]
+
+CMD ["--allow-root", "--ip=0.0.0.0", "--no-browser"]
+
+#docker builder build --no-cache --build-arg IMAGE_VERSION=alpine --file Dockerfile.alpine --tag image-name:version .
+#docker container run --interactive --tty --publish 8888:8888 --name container-name image-name:version
