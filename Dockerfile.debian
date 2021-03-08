@@ -5,16 +5,23 @@ FROM python:${IMAGE_VERSION}
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
-    && apt-get upgrade -y --no-install-recommends
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get purge -y && apt-get autoremove -y && apt-get autoclean -y \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade \
+RUN pip install --upgrade --no-cache-dir \
     pip \
     setuptools \
     wheel \
     eggs
 
-RUN pip install --upgrade \
+RUN pip install --upgrade --no-cache-dir \
     jupyterlab \
+    jupyterlab_code_formatter \
+    black \
+    isort \
+    && mkdir --parents /home/jupyter-lab \
+    && apt-get purge -y && apt-get autoremove -y && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GID
@@ -30,7 +37,7 @@ RUN addgroup --gid ${GID} ${UID_NAME} \
     --disabled-password \
     --gecos "" ${UID_NAME}
 
-RUN mkdir --parents /home/${UID_NAME}/jupyter-lab
+COPY . /root/.jupyter/lab/
 
 WORKDIR /home/${UID_NAME}/jupyter-lab
 
