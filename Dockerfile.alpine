@@ -17,19 +17,16 @@ RUN pip install --upgrade --no-cache-dir \
     pip \
     setuptools \
     wheel \
-    eggs \
-    && rm -rf /var/cache/apk/*
+    eggs
+
+COPY . /root/.jupyter/lab/
 
 RUN pip install --upgrade --no-cache-dir \
     jupyterlab \
-    jupyterlab_code_formatter \
-    black \
-    isort \
-    && mkdir --parents /home/jupyter-lab \
+    --requirement /root/.jupyter/lab/requirements.txt \
+    && rm -rf /root/.jupyter/lab/requirements.txt \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
-
-COPY . /root/.jupyter/lab/
 
 WORKDIR /home/jupyter-lab
 
