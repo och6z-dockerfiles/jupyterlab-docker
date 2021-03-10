@@ -15,12 +15,12 @@ RUN pip install --upgrade --no-cache-dir \
     wheel \
     eggs
 
+COPY . /root/.jupyter/lab/
+
 RUN pip install --upgrade --no-cache-dir \
     jupyterlab \
-    jupyterlab_code_formatter \
-    black \
-    isort \
-    && mkdir --parents /home/jupyter-lab \
+    --requirement /root/.jupyter/lab/requirements.txt \
+    && rm --force /root/.jupyter/lab/requirements.txt \
     && apt-get purge -y && apt-get autoremove -y && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,8 +36,6 @@ RUN addgroup --gid ${GID} ${UID_NAME} \
     --shell /bin/bash \
     --disabled-password \
     --gecos "" ${UID_NAME}
-
-COPY . /root/.jupyter/lab/
 
 WORKDIR /home/${UID_NAME}/jupyter-lab
 
