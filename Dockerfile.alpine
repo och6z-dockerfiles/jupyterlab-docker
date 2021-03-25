@@ -37,4 +37,5 @@ ENTRYPOINT ["jupyter-lab"]
 CMD ["--allow-root", "--ip=0.0.0.0", "--no-browser"]
 
 #docker builder build --no-cache --build-arg IMAGE_VERSION=alpine --file Dockerfile.alpine --tag image-name:version .
-#docker container run --interactive --tty --publish 8888:8888 --name container-name image-name:version
+#docker volume create --driver local --name jupyter-lab
+#docker container run --interactive --tty --mount source=jupyter-lab,target=/home/jupyter-lab --publish 8888:8888 --name container-name image-name:version
