@@ -49,5 +49,5 @@ ENTRYPOINT ["jupyter-lab"]
 CMD ["--allow-root", "--ip=0.0.0.0", "--no-browser"]
 
 #docker builder build --no-cache --build-arg IMAGE_VERSION=unstable-slim --build-arg GID=$(id -g) --build-arg GID_NAME=$(id -gn) --build-arg UID=$(id -u) --build-arg UID_NAME=$(id -un) --file Dockerfile.debian --tag image-name:version .
-#docker volume create --driver local --name jupyter-lab
-#docker container run --interactive --tty --mount source=jupyter-lab,target=/home/$(id -un)/jupyter-lab --publish 8888:8888 --name container-name image-name:version
+#docker volume create --driver local --name volume-name
+#docker container run --interactive --tty --mount source=volume-name,target=/home/$(id -un)/jupyter-lab --publish 8888:8888 --name container-name image-name:version
